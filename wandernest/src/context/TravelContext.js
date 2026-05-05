@@ -13,15 +13,24 @@ const loadStoredValue = (key, fallback) => {
 
 export function TravelProvider({ children }) {
   const [itinerary, setItinerary] = useState(() => loadStoredValue('wandernest-itinerary', []));
-  const [isDarkMode, setIsDarkMode] = useState(() => loadStoredValue('wandernest-dark-mode', false));
+
+  // Read from 'theme' key so it stays in sync with App.js initialization
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved === 'dark';
+    // Fall back to OS preference if no saved value
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
 
   useEffect(() => {
     localStorage.setItem('wandernest-itinerary', JSON.stringify(itinerary));
   }, [itinerary]);
 
   useEffect(() => {
-    localStorage.setItem('wandernest-dark-mode', JSON.stringify(isDarkMode));
+    // Apply dark class to <html> so Tailwind dark: classes work globally
     document.documentElement.classList.toggle('dark', isDarkMode);
+    // Save under 'theme' key — same key App.js reads on initial load
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 
   const addDestination = (destination) => {
@@ -29,7 +38,6 @@ export function TravelProvider({ children }) {
       if (current.some((item) => item.id === destination.id)) {
         return current;
       }
-
       return [
         ...current,
         {
@@ -46,7 +54,9 @@ export function TravelProvider({ children }) {
   };
 
   const updateDestinationDay = (id, day) => {
-    setItinerary((current) => current.map((item) => (item.id === id ? { ...item, day } : item)));
+    setItinerary((current) =>
+      current.map((item) => (item.id === id ? { ...item, day } : item))
+    );
   };
 
   const value = useMemo(
@@ -58,7 +68,7 @@ export function TravelProvider({ children }) {
       updateDestinationDay,
       toggleDarkMode: () => setIsDarkMode((current) => !current),
     }),
-    [itinerary, isDarkMode],
+    [itinerary, isDarkMode]
   );
 
   return <TravelContext.Provider value={value}>{children}</TravelContext.Provider>;

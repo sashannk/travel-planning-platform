@@ -27,7 +27,7 @@ const fallbackDestinations = [
     id: 'fallback-morocco',
     title: 'Marrakesh Market Stay',
     location: 'Morocco',
-    image: 'https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://images.unsplash.com/photo-1489749798305-4fea3ae63d43?auto=format&fit=crop&w=1200&q=80',
   },
   {
     id: 'fallback-bali',
