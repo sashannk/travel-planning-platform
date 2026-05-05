@@ -2,6 +2,9 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 const TravelContext = createContext(null);
 
+const prefersDarkMode = () =>
+  window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+
 const loadStoredValue = (key, fallback) => {
   try {
     const value = localStorage.getItem(key);
@@ -14,12 +17,12 @@ const loadStoredValue = (key, fallback) => {
 export function TravelProvider({ children }) {
   const [itinerary, setItinerary] = useState(() => loadStoredValue('wandernest-itinerary', []));
 
-  // Read from 'theme' key so it stays in sync with App.js initialization
+  // Read from 'theme' key so it stays in sync with App.jsx initialization
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('theme');
     if (saved) return saved === 'dark';
     // Fall back to OS preference if no saved value
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return prefersDarkMode();
   });
 
   useEffect(() => {
@@ -29,7 +32,7 @@ export function TravelProvider({ children }) {
   useEffect(() => {
     // Apply dark class to <html> so Tailwind dark: classes work globally
     document.documentElement.classList.toggle('dark', isDarkMode);
-    // Save under 'theme' key — same key App.js reads on initial load
+    // Save under 'theme' key so App.jsx reads the same preference on initial load
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 

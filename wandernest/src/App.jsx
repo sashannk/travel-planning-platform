@@ -10,11 +10,14 @@ import Explore from './pages/Explore';
 import Home from './pages/Home';
 import MyNest from './pages/MyNest';
 
+const prefersDarkMode = () =>
+  window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+
 function App() {
   // Apply saved dark mode preference to <html> on initial load
   useEffect(() => {
     const saved = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const prefersDark = prefersDarkMode();
 
     if (saved === 'dark' || (!saved && prefersDark)) {
       document.documentElement.classList.add('dark');
